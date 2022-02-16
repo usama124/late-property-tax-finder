@@ -72,8 +72,10 @@ class AutomateLookup:
                 delq_counter = delq_counter + 1 if typee.lower() == "delq" else delq_counter
 
         if delq_counter == 1:
+            print("Writing sheet 1")
             # TODO write in 1st year DELQ spreadsheet
         else:
+            print("Writing sheet 2")
             # TODO write in 2nd year DELQ spreadsheet
 
     def search_parcel_tax_pdf(self, parcel_id):
