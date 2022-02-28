@@ -70,6 +70,7 @@ parcel_lookup_url = general_conf["parcel_lookup_url"]
 delq_lookup_url = general_conf["delq_lookup_url"]
 property_tax_pdf_lookup = general_conf["property_tax_pdf_lookup"]
 google_spread_sheet_link = general_conf["google_spread_sheet_link"]
+pdf_download_link = general_conf["pdf_download_link"]
 
 parcel_record = read_parcel_record()
 
@@ -85,12 +86,12 @@ if __name__ == '__main__':
 
     parcel_record = apply_validation(parcel_record)
 
-    automate_lookup.open_page(delq_lookup_url)
+    data_dict = dict()
     for parcel_id in parcel_record.keys():
-        automate_lookup.search_parcel_delq(parcel_id)
+        automate_lookup.open_page(property_tax_pdf_lookup)
+        data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link)
+        automate_lookup.open_page(delq_lookup_url)
+        automate_lookup.search_parcel_delq(parcel_id, data_dict)
 
-    automate_lookup.open_page(property_tax_pdf_lookup)
-    for parcel_id in parcel_record.keys():
-        automate_lookup.search_parcel_tax_pdf(parcel_id)
 
     automate_lookup.close_website()

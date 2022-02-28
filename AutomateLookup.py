@@ -2,6 +2,7 @@ import re
 import time
 from datetime import date
 from bs4 import BeautifulSoup
+import PdfMiner
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -54,15 +55,24 @@ class AutomateLookup:
 
         return parcel_info_obj
 
-    def search_parcel_delq(self, parcel_id):
+    def type_as_human(self, parcel_id, input_field):
+        for one in parcel_id:
+            input_field.send_keys(one)
+            time.sleep(0.05)
+
+    def search_parcel_delq(self, parcel_id, data_dict):
         current_year = date.today().year - 2
         input = self.webDriver.find_element_by_id("ParcelSearch")
-        input.send_keys(parcel_id)
+        input.clear()
+        self.type_as_human(parcel_id, input)
+        #input.send_keys(parcel_id)
         self.webDriver.find_element_by_id("BeginSearch").click()
         time.sleep(6)
 
         page_obj = self.get_page_obj()
         result_table = page_obj.find("table", attrs={"class": "table table-bordered table-striped"})
+        if not result_table:
+            return None
         rows = result_table.find("tbody").findAll("tr")
         delq_counter = 0
         for row in rows:
@@ -78,11 +88,38 @@ class AutomateLookup:
             print("Writing sheet 2")
             # TODO write in 2nd year DELQ spreadsheet
 
-    def search_parcel_tax_pdf(self, parcel_id):
-        input = self.webDriver.find_element_by_id("parcelid")
-        input.send_keys(parcel_id)
+    def search_parcel_tax_pdf(self, parcel_id, pdf_download_link):
+        iframe = self.webDriver.find_element_by_xpath('//*[@id="leftNavArea"]/div[1]/div[1]/div/iframe')
+        self.webDriver.switch_to.frame(iframe)
+        input_field = self.webDriver.find_element_by_id("parcelid")
+        input_field.send_keys(parcel_id)
         self.webDriver.find_element_by_id("Submit").click()
         time.sleep(6)
+        page_obj = self.get_page_obj()
+        table_data = page_obj.select_one("#parcelFieldNames > div.valueSummBox > div > table")
+        table_rows = table_data.findAll("tr")
+        owner_name = table_rows[0].find("td").text.strip()
+        owner_adress = table_rows[1].find("td").text.strip()
+        pdf_download_link = pdf_download_link + parcel_id
+        contact_placeholder = PdfMiner.convert_pdf_to_txt(PdfMiner.download_pdf(pdf_download_link, parcel_id))
+        contact_placeholder.pop(0)
+        mailing_adress = contact_placeholder.pop(-2)
+        contact_details = contact_placeholder.pop(-1)
+        contact_details = contact_details.split(" ")
+        mailing_zip_code = contact_details.pop(-1)
+        mailing_state = contact_details.pop(-2)
+        mailing_city = " ".join(contact_details)
+        mailing_contact_name = " & ".join(contact_placeholder)
+        found_data = {
+            "ownerName": owner_name,
+            "ownerAdress": owner_adress,
+            "mailingName": mailing_contact_name,
+            "mailingAdress": mailing_adress,
+            "mailingCity": mailing_city,
+            "mailingState": mailing_state,
+            "mailingZip": mailing_zip_code
+        }
+        return found_data
 
     def close_website(self):
         self.selenium_obj.close_webdriver()
