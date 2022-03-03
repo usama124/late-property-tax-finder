@@ -1,5 +1,5 @@
 import configparser
-
+import ExcelWriter as GSheetWriter
 from AutomateLookup import AutomateLookup
 from SeleniumDriver import WebDriver
 
@@ -86,12 +86,15 @@ if __name__ == '__main__':
 
     parcel_record = apply_validation(parcel_record)
 
-    data_dict = dict()
     for parcel_id in parcel_record.keys():
-        automate_lookup.open_page(property_tax_pdf_lookup)
-        data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link)
         automate_lookup.open_page(delq_lookup_url)
-        automate_lookup.search_parcel_delq(parcel_id, data_dict)
+        data_dict = automate_lookup.search_parcel_delq(parcel_id)
+        if data_dict["DELQ"]:
+            automate_lookup.open_page(property_tax_pdf_lookup)
+            data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
+            #GSheetWriter.write_data_to_sheet(data_dict["DELQ"], data_dict)
+        else:
+            print("NO DELQ found. Skipping...")
 
 
     automate_lookup.close_website()

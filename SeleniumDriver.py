@@ -24,7 +24,6 @@ class WebDriver:
         chrome_options.add_argument('disable-infobars')
         chrome_options.add_argument("disable-notifications")
         self.webdriver = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=chrome_options)
-        #self.webdriver.switch_to.frame(iframe)
 
     def close_webdriver(self):
         try:

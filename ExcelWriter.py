@@ -1,14 +1,25 @@
-from oauth2client.service_account import ServiceAccountCredentials
-import gspread
-import json
-scopes = [
-'https://www.googleapis.com/auth/spreadsheets',
-'https://www.googleapis.com/auth/drive'
-]
-credentials = ServiceAccountCredentials.from_json_keyfile_name("GoogleAuth/google_auth.json", scopes) #access the json key you downloaded earlier
-file = gspread.authorize(credentials) # authenticate the JSON key with gspread
-sheet = file.open("sample_writing") #open sheet
-sheet = sheet.sheet1 #replace sheet_name with the name that corresponds to yours, e.g, it can be sheet1
-sheet.update_cell(2, 3, 'Blue')
+import pygsheets
 
-print(sheet.cell(2, 3).value)
+#authorization
+gc = pygsheets.authorize(service_file='GoogleAuth/google_auth.json')
+worksheet = gc.open('new_sheet')
+
+def write_data_to_sheet(sheet_num, data_dict):
+    new_row = [data_dict["mailingName"], data_dict["mailingAdress"], data_dict["mailingCity"],
+               data_dict["mailingState"], data_dict["mailingZip"], data_dict["ownerName"],
+               data_dict["ownerAdress"]]
+
+    try:
+        if sheet_num == 1:
+            worksheet.worksheet_by_title("DELQ1")
+        else:
+            worksheet.worksheet_by_title("DELQ2")
+
+        cells = worksheet.get_all_values(include_tailing_empty_rows=False, include_tailing_empty=False, returnas='matrix')
+        last_row = len(cells)
+        worksheet.insert_rows(last_row, number=1, values= new_row)
+        print("Spread sheet "+str(sheet_num)+" written successfully.")
+    except Exception as ex:
+        print("=> Spread sheet " + str(sheet_num) + " writing failed...")
+        print(new_row)
+        print(str(ex))

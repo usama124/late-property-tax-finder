@@ -30,7 +30,7 @@ def convert_pdf_to_txt(path):
         interpreter.process_page(page)
 
     text = retstr.getvalue()
-
+    text = text.split("\n")
     fp.close()
     device.close()
     retstr.close()
@@ -41,6 +41,6 @@ def convert_pdf_to_txt(path):
 #text = convert_pdf_to_txt("15102330140000.pdf").split("\n")
 #text = convert_pdf_to_txt("/home/usama/Downloads/15022290150000.pdf").split("\n")
 # file_path = download_pdf("https://slco.org/services/au/au-e-nov-service/api/nov/GetReport/15294030250000", "15294030250000")
-# text = convert_pdf_to_txt(file_path).split("\n")
+#text = convert_pdf_to_txt("PDF_FILES/15294030250000.pdf")
 # res = [list(sub) for ele, sub in groupby(text, key=bool) if ele]
-# print(res[2])
+#print(text)
