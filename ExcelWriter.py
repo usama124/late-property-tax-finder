@@ -1,8 +1,8 @@
 import pygsheets
 
 #authorization
-gc = pygsheets.authorize(service_file='GoogleAuth/google_auth.json')
-worksheet = gc.open('new_sheet')
+gc = pygsheets.authorize(service_file='GoogleAuth/google_auth.json') # Google auth file generated from google developer account
+worksheet = gc.open('new_sheet') # Name of the google sheet
 
 def write_data_to_sheet(sheet_num, data_dict):
     new_row = [data_dict["mailingName"], data_dict["mailingAdress"], data_dict["mailingCity"],
@@ -11,9 +11,9 @@ def write_data_to_sheet(sheet_num, data_dict):
 
     try:
         if sheet_num == 1:
-            worksheet.worksheet_by_title("DELQ1")
+            worksheet.worksheet_by_title("DELQ1") #Sheet name
         else:
-            worksheet.worksheet_by_title("DELQ2")
+            worksheet.worksheet_by_title("DELQ2") #Sheet name
 
         cells = worksheet.get_all_values(include_tailing_empty_rows=False, include_tailing_empty=False, returnas='matrix')
         last_row = len(cells)

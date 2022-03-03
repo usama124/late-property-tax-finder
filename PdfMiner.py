@@ -35,12 +35,5 @@ def convert_pdf_to_txt(path):
     device.close()
     retstr.close()
 
-    res = [list(sub) for ele, sub in groupby(text, key=bool) if ele]
-    return res[2]
-
-#text = convert_pdf_to_txt("15102330140000.pdf").split("\n")
-#text = convert_pdf_to_txt("/home/usama/Downloads/15022290150000.pdf").split("\n")
-# file_path = download_pdf("https://slco.org/services/au/au-e-nov-service/api/nov/GetReport/15294030250000", "15294030250000")
-#text = convert_pdf_to_txt("PDF_FILES/15294030250000.pdf")
-# res = [list(sub) for ele, sub in groupby(text, key=bool) if ele]
-#print(text)
+    res = [list(sub) for ele, sub in groupby(text, key=bool) if ele] #List iterator for splitting information line by line
+    return res[2] #Picking up the required information

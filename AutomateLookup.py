@@ -91,13 +91,16 @@ class AutomateLookup:
         input_field.send_keys(parcel_id)
         self.webDriver.find_element_by_id("Submit").click()
         time.sleep(6)
+        #Finding information from table on https://slco.org/assessor
         page_obj = self.get_page_obj()
         table_data = page_obj.select_one("#parcelFieldNames > div.valueSummBox > div > table")
         table_rows = table_data.findAll("tr")
         data_dict["ownerName"] = table_rows[0].find("td").text.strip()
         data_dict["ownerAdress"] = table_rows[1].find("td").text.strip()
+        #Downloading and reading PDF
         pdf_download_link = pdf_download_link + parcel_id
         contact_placeholder = PdfMiner.convert_pdf_to_txt(PdfMiner.download_pdf(pdf_download_link, parcel_id))
+        #Extracting required information from PDF
         contact_placeholder.pop(0)
         data_dict["mailingAdress"] = contact_placeholder.pop(-2)
         contact_details = contact_placeholder.pop(-1)
