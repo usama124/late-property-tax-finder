@@ -5,9 +5,9 @@ gc = pygsheets.authorize(service_file='GoogleAuth/google_auth.json') # Google au
 worksheet = gc.open('new_sheet') # Name of the google sheet
 
 def write_data_to_sheet(sheet_num, data_dict):
-    new_row = [data_dict["mailingName"], data_dict["mailingAdress"], data_dict["mailingCity"],
-               data_dict["mailingState"], data_dict["mailingZip"], data_dict["ownerName"],
-               data_dict["ownerAdress"]]
+    new_row = [data_dict["mailingNameOrignal"], data_dict["mailingNameFormatted"], data_dict["mailingAdress"],
+               data_dict["mailingCity"], data_dict["mailingState"], data_dict["mailingZip"], data_dict["ownerName"],
+               data_dict["ownerAdress"], "Prop Tax"]
 
     try:
         if sheet_num == 1:
