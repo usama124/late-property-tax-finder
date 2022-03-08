@@ -16,7 +16,7 @@ class WebDriver:
         CHROME_DRIVER_PATH = "ChromDriver/chromedriver"
         driver = None
         chrome_options = Options()
-        # chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
         chrome_options.binary_location = self.chrome_path
         chrome_options.add_argument("User-Agent=" + str(ua.random))
