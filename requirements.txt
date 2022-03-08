@@ -1,0 +1,7 @@
+beautifulsoup4==4.10.0
+fake_useragent==0.1.11
+pdfminer==20191125
+pdfminer.six==20211012
+pygsheets==2.0.5
+requests==2.22.0
+selenium==4.1.2
