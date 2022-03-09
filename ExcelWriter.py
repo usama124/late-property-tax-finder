@@ -2,7 +2,7 @@ import pygsheets
 
 #authorization
 gc = pygsheets.authorize(service_file='GoogleAuth/google_auth.json') # Google auth file generated from google developer account
-worksheet = gc.open('new_sheet') # Name of the google sheet
+worksheet = gc.open('Late Prop Tax Input trent') # Name of the google sheet
 
 def write_data_to_sheet(sheet_num, data_dict):
     new_row = [data_dict["mailingNameOrignal"], data_dict["mailingNameFormatted"], data_dict["mailingAdress"],
@@ -11,13 +11,13 @@ def write_data_to_sheet(sheet_num, data_dict):
 
     try:
         if sheet_num == 1:
-            worksheet.worksheet_by_title("DELQ1") #Sheet name
+            sheet = worksheet.worksheet_by_title("DELQ1") #Sheet name
         else:
-            worksheet.worksheet_by_title("DELQ2") #Sheet name
+            sheet = worksheet.worksheet_by_title("DELQ2") #Sheet name
 
-        cells = worksheet.get_all_values(include_tailing_empty_rows=False, include_tailing_empty=False, returnas='matrix')
+        cells = sheet.get_all_values(include_tailing_empty_rows=False, include_tailing_empty=False, returnas='matrix')
         last_row = len(cells)
-        worksheet.insert_rows(last_row, number=1, values= new_row)
+        sheet.insert_rows(last_row, number=1, values= new_row)
         print("Spread sheet "+str(sheet_num)+" written successfully.")
     except Exception as ex:
         print("=> Spread sheet " + str(sheet_num) + " writing failed...")
