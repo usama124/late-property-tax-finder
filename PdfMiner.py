@@ -7,13 +7,16 @@ from itertools import groupby
 import requests
 
 def download_pdf(url, parcel_id):
+    print("Downloading pdf...")
     response = requests.get(url)
     file_name = 'PDF_FILES/'+parcel_id+".pdf"
     with open(file_name, 'wb') as f:
         f.write(response.content)
+    print("pdf downloaded successfully...")
     return file_name
 
 def convert_pdf_to_txt(path):
+    print("Converting pdf to text...")
     rsrcmgr = PDFResourceManager()
     retstr = StringIO()
     codec = 'utf-8'
@@ -34,6 +37,6 @@ def convert_pdf_to_txt(path):
     fp.close()
     device.close()
     retstr.close()
-
+    print("Converted...")
     res = [list(sub) for ele, sub in groupby(text, key=bool) if ele] #List iterator for splitting information line by line
     return res[2] #Picking up the required information
