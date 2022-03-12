@@ -39,6 +39,23 @@ def write_parcel_record(parcel_info_obj):
     f.close()
 
 
+def write_already_processed_record(parcel_id):
+    f = open("record/processed_rec.txt", "a")
+    f.write(parcel_id + "\n")
+    f.close()
+
+
+def read_already_processed_record():
+    parcel_rec = []
+    f = open("record/processed_rec.txt", "r")
+    line = f.readline().split("\n")[0]
+    while line != "" and line != None:
+        parcel_rec.append(line)
+        line = f.readline().split("\n")[0]
+    f.close()
+    return parcel_rec
+
+
 def write_parcel_record_data(path, parcel_info_obj):
     f = open(path, "w")
     for parcel in parcel_info_obj.keys():
@@ -76,6 +93,7 @@ parcel_record = read_parcel_record()
 
 selenium_webdriver = WebDriver(CHROME_PATH)
 
+already_processed_record = read_already_processed_record()
 
 if __name__ == '__main__':
     automate_lookup = AutomateLookup(CHROME_PATH)
@@ -87,14 +105,20 @@ if __name__ == '__main__':
     parcel_record = apply_validation(parcel_record)
 
     for parcel_id in parcel_record.keys():
-        automate_lookup.open_page(delq_lookup_url)
-        data_dict = automate_lookup.search_parcel_delq(parcel_id)
-        if data_dict["DELQ"]:
-            automate_lookup.open_page(property_tax_pdf_lookup)
-            data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
-            GSheetWriter.write_data_to_sheet(data_dict["DELQ"], data_dict)
+        if parcel_id not in already_processed_record:
+            automate_lookup.open_page(delq_lookup_url)
+            data_dict = automate_lookup.search_parcel_delq(parcel_id)
+            if data_dict["DELQ"]:
+                automate_lookup.open_page(property_tax_pdf_lookup)
+                data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
+                GSheetWriter.write_data_to_sheet(data_dict["DELQ"], data_dict)
+            else:
+                print("NO DELQ found. Skipping...")
+
+            write_already_processed_record(parcel_id)
+            already_processed_record.append(parcel_id)
         else:
-            print("NO DELQ found. Skipping...")
+            print("=> " + parcel_id + " already processed. Skipping...")
 
 
     automate_lookup.close_website()
