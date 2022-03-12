@@ -105,20 +105,24 @@ if __name__ == '__main__':
     parcel_record = apply_validation(parcel_record)
 
     for parcel_id in parcel_record.keys():
-        if parcel_id not in already_processed_record:
-            automate_lookup.open_page(delq_lookup_url)
-            data_dict = automate_lookup.search_parcel_delq(parcel_id)
-            if data_dict["DELQ"]:
-                automate_lookup.open_page(property_tax_pdf_lookup)
-                data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
-                GSheetWriter.write_data_to_sheet(data_dict["DELQ"], data_dict)
-            else:
-                print("NO DELQ found. Skipping...")
+        try:
+            if parcel_id not in already_processed_record:
+                automate_lookup.open_page(delq_lookup_url)
+                data_dict = automate_lookup.search_parcel_delq(parcel_id)
+                if data_dict["DELQ"]:
+                    automate_lookup.open_page(property_tax_pdf_lookup)
+                    data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
+                    GSheetWriter.write_data_to_sheet(data_dict["DELQ"], data_dict)
+                else:
+                    print("NO DELQ found. Skipping...")
 
-            write_already_processed_record(parcel_id)
-            already_processed_record.append(parcel_id)
-        else:
-            print("=> " + parcel_id + " already processed. Skipping...")
+                write_already_processed_record(parcel_id)
+                already_processed_record.append(parcel_id)
+            else:
+                print("=> " + parcel_id + " already processed. Skipping...")
+        except Exception as e:
+            print(e)
+            pass
 
 
     automate_lookup.close_website()
