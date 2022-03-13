@@ -18,8 +18,8 @@ class WebDriver:
         chrome_options = Options()
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument("--headless")
+        chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
-        chrome_options.add_argument('--disable-gpu')
         chrome_options.binary_location = self.chrome_path
         chrome_options.add_argument("User-Agent=" + str(ua.random))
         chrome_options.add_argument(f'Referer=https://www.google.com/')
