@@ -118,7 +118,10 @@ class AutomateLookup:
         return " & ".join(final_name)
 
     def close_website(self):
-        self.selenium_obj.close_webdriver()
+        try:
+            self.selenium_obj.close_webdriver()
+        except:
+            pass
 
     def get_page_obj(self):
         return BeautifulSoup(self.webDriver.page_source, 'lxml')
