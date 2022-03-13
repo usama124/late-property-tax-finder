@@ -96,7 +96,7 @@ selenium_webdriver = WebDriver(CHROME_PATH)
 already_processed_record = read_already_processed_record()
 
 if __name__ == '__main__':
-    automate_lookup = AutomateLookup(CHROME_PATH)
+
 
     #automate_lookup.open_page(parcel_lookup_url)
     #parcel_record = automate_lookup.get_parcel_owner_info()
@@ -105,6 +105,7 @@ if __name__ == '__main__':
     parcel_record = apply_validation(parcel_record)
 
     for parcel_id in parcel_record.keys():
+        automate_lookup = AutomateLookup(CHROME_PATH)
         try:
             if parcel_id not in already_processed_record:
                 automate_lookup.open_page(delq_lookup_url)
@@ -123,6 +124,4 @@ if __name__ == '__main__':
         except Exception as e:
             print(e)
             pass
-
-
-    automate_lookup.close_website()
+        automate_lookup.close_website()
