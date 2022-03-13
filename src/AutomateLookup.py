@@ -58,6 +58,7 @@ class AutomateLookup:
     def search_parcel_delq(self, parcel_id):
         data_dict = {"DELQ": None}
         current_year = date.today().year - 2
+        time.sleep(3)
         input = self.webDriver.find_element_by_id("ParcelSearch")
         input.clear()
         self.type_as_human(parcel_id, input)
