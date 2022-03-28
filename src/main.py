@@ -66,7 +66,8 @@ def write_parcel_record_data(path, parcel_info_obj):
 def apply_validation(parcel_record_data):
     final_parcel_rec = {}
     skipped_parcel_rec = {}
-    exclude_list = ["APTS", "CORP", "Inc", "Incorporated", "LLC", "AGENCY"]
+    exclude_list = ["APTS", "CORP", "Inc", "Incorporated", "LLC", "AGENCY", "LC", "BAIL BONDS", "HOLDINGS",
+                    "Corp", "CORPORATION", "ENTERPRISE"]
     for parcel_id in parcel_record_data:
         res = [True if x.lower() in parcel_record_data[parcel_id].lower() else False for x in exclude_list]
         #res = list(set(res))
@@ -90,17 +91,15 @@ google_spread_sheet_link = general_conf["google_spread_sheet_link"]
 pdf_download_link = general_conf["pdf_download_link"]
 
 parcel_record = read_parcel_record()
-
-selenium_webdriver = WebDriver(CHROME_PATH)
-
 already_processed_record = read_already_processed_record()
 
 if __name__ == '__main__':
 
-
-    #automate_lookup.open_page(parcel_lookup_url)
-    #parcel_record = automate_lookup.get_parcel_owner_info()
-    #write_parcel_record(parcel_record)
+    automate_lookup = AutomateLookup(CHROME_PATH)
+    automate_lookup.open_page(parcel_lookup_url)
+    parcel_record = automate_lookup.get_parcel_owner_info()
+    write_parcel_record(parcel_record)
+    automate_lookup.close_website()
 
     parcel_record = apply_validation(parcel_record)
 
@@ -113,7 +112,7 @@ if __name__ == '__main__':
                 if data_dict["DELQ"]:
                     automate_lookup.open_page(property_tax_pdf_lookup)
                     data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
-                    GSheetWriter.write_data_to_sheet(data_dict["DELQ"], data_dict)
+                    GSheetWriter.write_data_to_sheet(data_dict)
                 else:
                     print("NO DELQ found. Skipping...")
 

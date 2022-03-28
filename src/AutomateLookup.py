@@ -35,7 +35,8 @@ class AutomateLookup:
                 result_table_data = page_obj.find("table", attrs={"id": "ResultTable"}).find("tbody").findAll("tr")
                 for row_data in result_table_data:
                     col_data = row_data.findAll("td")
-                    parcel_info_obj[col_data[0].text.strip()] = col_data[1].text.strip()
+                    if float(col_data[-1].text.strip()) > 1000.0:
+                        parcel_info_obj[col_data[0].text.strip()] = col_data[1].text.strip()
                 current_length = len(parcel_info_obj.keys())
             except Exception as e:
                 print(e)
