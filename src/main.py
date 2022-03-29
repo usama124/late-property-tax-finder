@@ -1,7 +1,6 @@
 import configparser
 import ExcelWriter as GSheetWriter
 from AutomateLookup import AutomateLookup
-from SeleniumDriver import WebDriver
 
 parser = configparser.ConfigParser()
 parser.read("Conf/config.ini")
@@ -22,7 +21,7 @@ def confParser(section):
 
 def read_parcel_record():
     parcel_rec = {}
-    f = open("record/parcel_id_name.txt", "r")
+    f = open("record/final_parcel_id_name.txt", "r")
     line = f.readline().split("\n")[0]
     while line != "" and line != None:
         splitted_line = line.split("|")
@@ -30,13 +29,6 @@ def read_parcel_record():
         line = f.readline().split("\n")[0]
     f.close()
     return parcel_rec
-
-
-def write_parcel_record(parcel_info_obj):
-    f = open("record/parcel_id_name.txt", "a")
-    for parcel in parcel_info_obj.keys():
-        f.write(parcel + "|" + parcel_info_obj[parcel] + "\n")
-    f.close()
 
 
 def write_already_processed_record(parcel_id):
@@ -56,31 +48,6 @@ def read_already_processed_record():
     return parcel_rec
 
 
-def write_parcel_record_data(path, parcel_info_obj):
-    f = open(path, "w")
-    for parcel in parcel_info_obj.keys():
-        f.write(parcel + "|" + parcel_info_obj[parcel] + "\n")
-    f.close()
-
-
-def apply_validation(parcel_record_data):
-    final_parcel_rec = {}
-    skipped_parcel_rec = {}
-    exclude_list = ["APTS", "CORP", "Inc", "Incorporated", "LLC", "AGENCY", "LC", "BAIL BONDS", "HOLDINGS",
-                    "Corp", "CORPORATION", "ENTERPRISE"]
-    for parcel_id in parcel_record_data:
-        res = [True if x.lower() in parcel_record_data[parcel_id].lower() else False for x in exclude_list]
-        #res = list(set(res))
-        while False in res: res.remove(False)
-        if len(res) == 0:
-            final_parcel_rec[parcel_id] = parcel_record_data[parcel_id]
-        else:
-            skipped_parcel_rec[parcel_id] = parcel_record_data[parcel_id]
-    write_parcel_record_data("record/skipped_parcel_id_name.txt", skipped_parcel_rec)
-    write_parcel_record_data("record/final_parcel_id_name.txt", final_parcel_rec)
-    return final_parcel_rec
-
-
 general_conf = confParser("general_conf")
 CHROME_PATH = general_conf["chrome_path"]
 
@@ -94,14 +61,6 @@ parcel_record = read_parcel_record()
 already_processed_record = read_already_processed_record()
 
 if __name__ == '__main__':
-
-    automate_lookup = AutomateLookup(CHROME_PATH)
-    automate_lookup.open_page(parcel_lookup_url)
-    parcel_record = automate_lookup.get_parcel_owner_info()
-    write_parcel_record(parcel_record)
-    automate_lookup.close_website()
-
-    parcel_record = apply_validation(parcel_record)
 
     for parcel_id in parcel_record.keys():
         automate_lookup = AutomateLookup(CHROME_PATH)
