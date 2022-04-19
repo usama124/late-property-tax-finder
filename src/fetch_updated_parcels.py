@@ -36,7 +36,8 @@ def apply_validation(parcel_record_data):
     final_parcel_rec = {}
     skipped_parcel_rec = {}
     exclude_list = ["APTS", "CORP", "Inc", "Incorporated", "LLC", "AGENCY", "LC", "BAIL BONDS", "HOLDINGS",
-                    "Corp", "CORPORATION", "ENTERPRISE"]
+                    "Corp", "CORPORATION", "ENTERPRISE", "Blackwater", "Acqui", "Acquisitions", "Investment",
+                    "Property", "Investments", "Dane Bollwinkel"]
     for parcel_id in parcel_record_data:
         res = [True if x.lower() in parcel_record_data[parcel_id].lower() else False for x in exclude_list]
         while False in res: res.remove(False)

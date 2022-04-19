@@ -71,7 +71,8 @@ if __name__ == '__main__':
                 if data_dict["DELQ"]:
                     automate_lookup.open_page(property_tax_pdf_lookup)
                     data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
-                    GSheetWriter.write_data_to_sheet(data_dict)
+                    if data_dict:
+                        GSheetWriter.write_data_to_sheet(data_dict)
                 else:
                     print("NO DELQ found. Skipping...")
 

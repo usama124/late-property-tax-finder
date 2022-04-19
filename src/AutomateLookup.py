@@ -92,7 +92,10 @@ class AutomateLookup:
         page_obj = self.get_page_obj()
         table_data = page_obj.select_one("#parcelFieldNames > div.valueSummBox > div > table")
         table_rows = table_data.findAll("tr")
-        data_dict["ownerName"] = table_rows[0].find("td").text.strip()
+        owner_name = table_rows[0].find("td").text.strip()
+        if "BOLLWINKEL, DANE".lower() in owner_name.lower():
+            return None
+        data_dict["ownerName"] = owner_name
         data_dict["ownerAdress"] = table_rows[1].find("td").text.strip()
         #Downloading and reading PDF
         pdf_download_link = pdf_download_link + parcel_id
