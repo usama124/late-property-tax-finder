@@ -81,7 +81,7 @@ class AutomateLookup:
         data_dict["DELQ"] = delq_counter if delq_counter != 0 else None
         return data_dict
 
-    def search_parcel_tax_pdf(self, parcel_id, pdf_download_link, data_dict):
+    def search_parcel_tax_pdf(self, parcel_id, pdf_download_link, data_dict, exclude_list):
         iframe = self.webDriver.find_element_by_xpath('//*[@id="leftNavArea"]/div[1]/div[1]/div/iframe')
         self.webDriver.switch_to.frame(iframe)
         input_field = self.webDriver.find_element_by_id("parcelid")
@@ -94,6 +94,13 @@ class AutomateLookup:
         table_rows = table_data.findAll("tr")
         owner_name = table_rows[0].find("td").text.strip()
         if "BOLLWINKEL, DANE".lower() in owner_name.lower():
+            return None
+        exclude = False
+        for excl in exclude_list:
+            if excl.lower() in owner_name.lower():
+                exclude = True
+                break
+        if exclude:
             return None
         data_dict["ownerName"] = owner_name
         data_dict["ownerAdress"] = table_rows[1].find("td").text.strip()
@@ -110,7 +117,16 @@ class AutomateLookup:
         data_dict["mailingState"] = contact_details.pop(-1)
         data_dict["mailingCity"] = " ".join(contact_details)
         data_dict["mailingNameFormatted"] = self.format_name(contact_placeholder)
-        data_dict["mailingNameOrignal"] = " & ".join(contact_placeholder)
+        mailing_name = " & ".join(contact_placeholder)
+        data_dict["mailingNameOrignal"] = mailing_name
+
+        exclude = False
+        for excl in exclude_list:
+            if excl.lower() in mailing_name.lower():
+                exclude = True
+                break
+        if exclude:
+            return None
 
         return data_dict
 

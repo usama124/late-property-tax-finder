@@ -48,6 +48,10 @@ def read_already_processed_record():
     return parcel_rec
 
 
+exclude_list = ["APTS", "CORP", "Inc", "Incorporated", "LLC", "AGENCY", "LC", "BAIL BONDS", "HOLDINGS",
+                    "Corp", "CORPORATION", "ENTERPRISE", "Blackwater", "Acqui", "Acquisitions", "Investment",
+                    "Property", "Investments", "Dane Bollwinkel"]
+
 general_conf = confParser("general_conf")
 CHROME_PATH = general_conf["chrome_path"]
 
@@ -70,7 +74,7 @@ if __name__ == '__main__':
                 data_dict = automate_lookup.search_parcel_delq(parcel_id)
                 if data_dict["DELQ"]:
                     automate_lookup.open_page(property_tax_pdf_lookup)
-                    data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict)
+                    data_dict = automate_lookup.search_parcel_tax_pdf(parcel_id, pdf_download_link, data_dict, exclude_list)
                     if data_dict:
                         GSheetWriter.write_data_to_sheet(data_dict)
                 else:
