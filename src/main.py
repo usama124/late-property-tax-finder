@@ -65,9 +65,8 @@ parcel_record = read_parcel_record()
 already_processed_record = read_already_processed_record()
 
 if __name__ == '__main__':
-
+    automate_lookup = AutomateLookup(CHROME_PATH)
     for parcel_id in parcel_record.keys():
-        automate_lookup = AutomateLookup(CHROME_PATH)
         try:
             if parcel_id not in already_processed_record:
                 automate_lookup.open_page(delq_lookup_url)
@@ -87,4 +86,4 @@ if __name__ == '__main__':
         except Exception as e:
             print(e)
             pass
-        automate_lookup.close_website()
+    automate_lookup.close_website()
