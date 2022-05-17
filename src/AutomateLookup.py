@@ -4,6 +4,10 @@ from bs4 import BeautifulSoup
 import PdfMiner
 
 from SeleniumDriver import WebDriver
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 class AutomateLookup:
@@ -12,15 +16,21 @@ class AutomateLookup:
         self.selenium_obj = WebDriver(chrome_path)
         self.selenium_obj.init_driver()
         self.webDriver = self.selenium_obj.webdriver
+        self.action = ActionChains(self.webDriver)
 
     def open_page(self, page_url):
         self.webDriver.get(page_url)
 
     def get_parcel_owner_info(self):
         parcel_info_obj = {}
-        cat_button_elements = self.webDriver.find_element_by_id("SelectABC").find_elements_by_tag_name("button")
+        main_navigation = self.webDriver.find_element_by_id("SelectABC")
+        cat_button_elements = main_navigation.find_elements_by_tag_name("button")
         for elem in cat_button_elements:
-            elem.click()
+            time.sleep(2)
+            self.webDriver.execute_script("arguments[0].scrollIntoView();", main_navigation)
+            #self.action.move_to_element(main_navigation).perform()
+            #elem.click()
+            self.webDriver.execute_script("arguments[0].click();", elem)
             parcel_info_obj = self.read_details(parcel_info_obj)
 
         return parcel_info_obj
@@ -29,6 +39,7 @@ class AutomateLookup:
         time.sleep(3)
         prev_length = 0
         current_length = 0
+        cntr = 0
         while True:
             page_obj = self.get_page_obj()
             try:
@@ -41,9 +52,16 @@ class AutomateLookup:
             except Exception as e:
                 print(e)
             try:
-                self.webDriver.find_element_by_id("ResultTable_next").click()
+                # self.webDriver.find_element_by_id("ResultTable_next").click()
+                next_page_elem = self.webDriver.find_element_by_xpath('//*[@id="ResultTable_next"]/a')
+                #self.action.move_to_element(next_page_elem).perform()
+                self.webDriver.execute_script("arguments[0].scrollIntoView();", next_page_elem)
+                #next_page_elem.click()
+                self.webDriver.execute_script("arguments[0].click();", next_page_elem)
                 if current_length == prev_length:
-                    break
+                    if cntr == 3:
+                        break
+                    cntr += 1
                 prev_length = current_length
             except Exception as e:
                 print(e)
@@ -57,42 +75,58 @@ class AutomateLookup:
             time.sleep(0.05)
 
     def search_parcel_delq(self, parcel_id):
-        data_dict = {"DELQ": None}
-        current_year = date.today().year - 2
-        time.sleep(3)
-        input = self.webDriver.find_element_by_id("ParcelSearch")
-        input.clear()
-        self.type_as_human(parcel_id, input)
-        #input.send_keys(parcel_id)
-        self.webDriver.find_element_by_id("BeginSearch").click()
-        time.sleep(6)
+        try:
+            data_dict = {"DELQ": None}
+            current_year = date.today().year - 2
+            time.sleep(3)
+            input = self.webDriver.find_element_by_id("ParcelSearch")
+            input.clear()
+            self.type_as_human(parcel_id, input)
+            #input.send_keys(parcel_id)
+            search_button = self.webDriver.find_element_by_id("BeginSearch")
+            self.webDriver.execute_script("arguments[0].scrollIntoView({'block':'center','inline':'center'})", search_button)
+            time.sleep(3)
+            search_button.click()
+            time.sleep(10)
+            try:
+                WebDriverWait(self.webDriver, 15).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#multipleCatId > div > table')))
+            except:
+                pass
 
-        page_obj = self.get_page_obj()
-        result_table = page_obj.find("table", attrs={"class": "table table-bordered table-striped"})
-        if not result_table:
-            return data_dict
-        rows = result_table.find("tbody").findAll("tr")
-        delq_counter = 0
-        for row in rows:
-            col_data = row.findAll("td")
-            if int(col_data[2].text.strip()) >= current_year:
-                typee = col_data[0].text.strip()
-                delq_counter = delq_counter + 1 if typee.lower() == "delq" else delq_counter
-        data_dict["DELQ"] = delq_counter if delq_counter != 0 else None
+            page_obj = self.get_page_obj()
+            result_table = page_obj.find("table", attrs={"class": "table table-bordered table-striped"})
+            if not result_table:
+                return data_dict
+            rows = result_table.find("tbody").findAll("tr")
+            delq_counter = 0
+            for row in rows:
+                col_data = row.findAll("td")
+                if int(col_data[2].text.strip()) >= current_year:
+                    typee = col_data[0].text.strip()
+                    delq_counter = delq_counter + 1 if typee.lower() == "delq" else delq_counter
+            data_dict["DELQ"] = delq_counter if delq_counter != 0 else None
+        except Exception as e:
+            print(e)
+            return {"DELQ": None}
         return data_dict
 
     def search_parcel_tax_pdf(self, parcel_id, pdf_download_link, data_dict, exclude_list):
-        iframe = self.webDriver.find_element_by_xpath('//*[@id="leftNavArea"]/div[1]/div[1]/div/iframe')
-        self.webDriver.switch_to.frame(iframe)
+        #iframe = self.webDriver.find_element_by_xpath('//*[@id="leftNavArea"]/div[1]/div[1]/div/iframe')
+        #self.webDriver.switch_to.frame(iframe)
+        parcel_div_button = self.webDriver.find_element_by_xpath('//*[@id="headingParcelID"]/button')
+        self.webDriver.execute_script("arguments[0].scrollIntoView({'block':'center','inline':'center'})",
+                                      parcel_div_button)
+        time.sleep(3)
+        parcel_div_button.click()
         input_field = self.webDriver.find_element_by_id("parcelid")
         input_field.send_keys(parcel_id)
-        self.webDriver.find_element_by_id("Submit").click()
+        self.webDriver.find_element_by_id("SubmitParcel").click()
         time.sleep(6)
         #Finding information from table on https://slco.org/assessor
         page_obj = self.get_page_obj()
         table_data = page_obj.select_one("#parcelFieldNames > div.valueSummBox > div > table")
         table_rows = table_data.findAll("tr")
-        owner_name = table_rows[0].find("td").text.strip()
+        owner_name = table_rows[0].findAll("td")[-1].text.strip()
         if "BOLLWINKEL, DANE".lower() in owner_name.lower():
             return None
         exclude = False
@@ -103,7 +137,7 @@ class AutomateLookup:
         if exclude:
             return None
         data_dict["ownerName"] = owner_name
-        data_dict["ownerAdress"] = table_rows[1].find("td").text.strip()
+        data_dict["ownerAdress"] = table_rows[1].findAll("td")[-1].text.strip()
         #Downloading and reading PDF
         pdf_download_link = pdf_download_link + parcel_id
         contact_placeholder = PdfMiner.convert_pdf_to_txt(PdfMiner.download_pdf(pdf_download_link, parcel_id))
