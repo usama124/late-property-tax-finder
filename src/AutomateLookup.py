@@ -120,6 +120,7 @@ class AutomateLookup:
         parcel_div_button.click()
         input_field = self.webDriver.find_element_by_id("parcelid")
         input_field.send_keys(parcel_id)
+        time.sleep(3)
         self.webDriver.find_element_by_id("SubmitParcel").click()
         time.sleep(6)
         #Finding information from table on https://slco.org/assessor
@@ -139,7 +140,17 @@ class AutomateLookup:
         data_dict["ownerName"] = owner_name
         data_dict["ownerAdress"] = table_rows[1].findAll("td")[-1].text.strip()
         #Downloading and reading PDF
-        pdf_download_link = pdf_download_link + parcel_id
+        prop_tax_pdf_link_gen = self.webDriver.find_element_by_xpath('//*[@id="skipto"]/div/aside/div/div/div/div/ul/li[3]/button')
+        self.webDriver.execute_script("arguments[0].scrollIntoView({'block':'center','inline':'center'})",
+                                      prop_tax_pdf_link_gen)
+        time.sleep(3)
+        prop_tax_pdf_link_gen.click()
+        time.sleep(10)
+
+        self.webDriver.switch_to.window(self.webDriver.window_handles[-1])
+        pdf_download_link = self.webDriver.current_url
+
+        # pdf_download_link = pdf_download_link + parcel_id
         contact_placeholder = PdfMiner.convert_pdf_to_txt(PdfMiner.download_pdf(pdf_download_link, parcel_id))
         #Extracting required information from PDF
         contact_placeholder.pop(0)
