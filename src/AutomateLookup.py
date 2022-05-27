@@ -1,3 +1,4 @@
+import os
 import time
 from datetime import date
 from bs4 import BeautifulSoup
@@ -110,6 +111,20 @@ class AutomateLookup:
             return {"DELQ": None}
         return data_dict
 
+    def get_downloaded_file(self):
+        files = os.listdir("PDF_FILES")
+        for file in files:
+            if ".pdf" in file:
+                return True, "PDF_FILES/" + file
+        return False
+
+    def delete_file(self, path):
+        try:
+            os.remove(path)
+            return True
+        except:
+            return False
+
     def search_parcel_tax_pdf(self, parcel_id, pdf_download_link, data_dict, exclude_list):
         #iframe = self.webDriver.find_element_by_xpath('//*[@id="leftNavArea"]/div[1]/div[1]/div/iframe')
         #self.webDriver.switch_to.frame(iframe)
@@ -147,11 +162,20 @@ class AutomateLookup:
         prop_tax_pdf_link_gen.click()
         time.sleep(10)
 
-        self.webDriver.switch_to.window(self.webDriver.window_handles[-1])
-        pdf_download_link = self.webDriver.current_url
-
+        # self.webDriver.switch_to.window(self.webDriver.window_handles[-1])
+        # pdf_download_link = self.webDriver.current_url
+        # self.webDriver.get(pdf_download_link)
         # pdf_download_link = pdf_download_link + parcel_id
-        contact_placeholder = PdfMiner.convert_pdf_to_txt(PdfMiner.download_pdf(pdf_download_link, parcel_id))
+        status, file_path = self.get_downloaded_file()
+        if not status:
+            print("File Downloading Failed..")
+            return None
+        # contact_placeholder = PdfMiner.convert_pdf_to_txt(PdfMiner.download_pdf(pdf_download_link, parcel_id))
+        contact_placeholder = PdfMiner.convert_pdf_to_txt(file_path)
+        status = self.delete_file(file_path)
+        if not status:
+            print("File deleting failed...")
+            return None
         #Extracting required information from PDF
         contact_placeholder.pop(0)
         data_dict["mailingAdress"] = contact_placeholder.pop(-2)

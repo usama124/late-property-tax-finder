@@ -26,6 +26,14 @@ class WebDriver:
         chrome_options.add_argument(f'Referer=https://www.google.com/')
         chrome_options.add_argument('disable-infobars')
         chrome_options.add_argument("disable-notifications")
+
+        chrome_options.add_experimental_option('prefs', {
+            "download.default_directory": "/home/usama/PycharmProjects/Personal/late-property-tax-finder/src/PDF_FILES",  # Change default directory for downloads
+            "download.prompt_for_download": False,  # To auto download the file
+            "download.directory_upgrade": True,
+            "plugins.always_open_pdf_externally": True  # It will not show PDF directly in chrome
+        })
+
         self.webdriver = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH, options=chrome_options)
 
     def close_webdriver(self):
