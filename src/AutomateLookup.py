@@ -112,11 +112,17 @@ class AutomateLookup:
         return data_dict
 
     def get_downloaded_file(self):
-        files = os.listdir("PDF_FILES")
-        for file in files:
-            if ".pdf" in file:
-                return True, "PDF_FILES/" + file
-        return False
+        counter = 0
+        while True:
+            files = os.listdir("PDF_FILES")
+            for file in files:
+                if ".pdf" in file:
+                    return True, "PDF_FILES/" + file
+            time.sleep(3)
+            counter += 1
+            if counter == 4:
+                break
+        return False, None
 
     def delete_file(self, path):
         try:
