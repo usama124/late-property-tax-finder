@@ -120,7 +120,7 @@ class AutomateLookup:
                     return True, "PDF_FILES/" + file
             time.sleep(3)
             counter += 1
-            if counter == 4:
+            if counter == 6:
                 break
         return False, None
 
