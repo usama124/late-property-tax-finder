@@ -1,4 +1,5 @@
 import os
+import re
 import time
 from datetime import date
 from bs4 import BeautifulSoup
@@ -131,6 +132,16 @@ class AutomateLookup:
         except:
             return False
 
+    def remove_single_char_in_name(self, name):
+        name = re.sub("\(.*?\)", "", name)
+        splitted_name = name.split(" ")
+        for sp_name in splitted_name:
+            if len(sp_name) == 1:
+                splitted_name.remove(sp_name)
+            if sp_name.lower() == "sr" or sp_name.lower() == "jr" or sp_name.lower() == "sr." or sp_name.lower() == "jr.":
+                splitted_name.remove(sp_name)
+        return " ".join(splitted_name)
+
     def search_parcel_tax_pdf(self, parcel_id, pdf_download_link, data_dict, exclude_list):
         #iframe = self.webDriver.find_element_by_xpath('//*[@id="leftNavArea"]/div[1]/div[1]/div/iframe')
         #self.webDriver.switch_to.frame(iframe)
@@ -158,7 +169,9 @@ class AutomateLookup:
                 break
         if exclude:
             return None
+        owner_name1 = self.remove_single_char_in_name(owner_name)
         data_dict["ownerName"] = owner_name
+        data_dict["ownerName1"] = owner_name1
         data_dict["ownerAdress"] = table_rows[1].findAll("td")[-1].text.strip()
         #Downloading and reading PDF
         prop_tax_pdf_link_gen = self.webDriver.find_element_by_xpath('//*[@id="skipto"]/div/aside/div/div/div/div/ul/li[3]/button')
@@ -191,7 +204,9 @@ class AutomateLookup:
         data_dict["mailingZip"] = contact_details.pop(-1)
         data_dict["mailingState"] = contact_details.pop(-1)
         data_dict["mailingCity"] = " ".join(contact_details)
+        contact_placeholder1 = self.remove_single_char_in_name(contact_placeholder)
         data_dict["mailingNameFormatted"] = self.format_name(contact_placeholder)
+        data_dict["mailingNameFormatted1"] = self.format_name(contact_placeholder1)
         mailing_name = " & ".join(contact_placeholder)
         data_dict["mailingNameOrignal"] = mailing_name
 

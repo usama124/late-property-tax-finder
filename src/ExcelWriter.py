@@ -6,8 +6,8 @@ worksheet = gc.open('Late Prop Tax Input trent') # Name of the google sheet
 sheet = worksheet.worksheet_by_title("DELQ")
 
 def write_data_to_sheet(data_dict):
-    new_row = [data_dict["mailingNameOrignal"], data_dict["mailingNameFormatted"], data_dict["mailingAdress"],
-               data_dict["mailingCity"], data_dict["mailingState"], data_dict["mailingZip"], data_dict["ownerName"],
+    new_row = [data_dict["mailingNameOrignal"], data_dict["mailingNameFormatted"], data_dict["mailingNameFormatted1"], data_dict["mailingAdress"],
+               data_dict["mailingCity"], data_dict["mailingState"], data_dict["mailingZip"], data_dict["ownerName"], data_dict["ownerName1"],
                data_dict["ownerAdress"], "Prop Tax"]
 
     try:

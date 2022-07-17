@@ -50,7 +50,7 @@ def read_already_processed_record():
 
 exclude_list = ["APTS", "CORP", "Inc", "Incorporated", "LLC", "AGENCY", "LC", "BAIL BONDS", "HOLDINGS",
                     "Corp", "CORPORATION", "ENTERPRISE", "Blackwater", "Acqui", "Acquisitions", "Investment",
-                    "Property", "Investments", "Dane Bollwinkel"]
+                    "Property", "Investments", "Dane Bollwinkel", "Bank ", "ASSET PROTECTION"]
 
 general_conf = confParser("general_conf")
 CHROME_PATH = general_conf["chrome_path"]
