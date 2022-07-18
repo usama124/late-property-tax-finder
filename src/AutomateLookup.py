@@ -204,7 +204,7 @@ class AutomateLookup:
         data_dict["mailingZip"] = contact_details.pop(-1)
         data_dict["mailingState"] = contact_details.pop(-1)
         data_dict["mailingCity"] = " ".join(contact_details)
-        contact_placeholder1 = self.remove_single_char_in_name(contact_placeholder)
+        contact_placeholder1 = self.remove_single_char_in_name(" ".join(contact_placeholder))
         data_dict["mailingNameFormatted"] = self.format_name(contact_placeholder)
         data_dict["mailingNameFormatted1"] = self.format_name(contact_placeholder1)
         mailing_name = " & ".join(contact_placeholder)
