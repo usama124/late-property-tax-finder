@@ -140,6 +140,7 @@ class AutomateLookup:
             name_list = name
         for x in range(0, len(name_list)):
             name_list[x] = re.sub("\(.*?\)", "", name_list[x])
+            name_list[x] = name_list[x].split(";")[0]
             splitted_name = name_list[x].split(" ")
             for sp_name in splitted_name:
                 if len(sp_name) == 1:
